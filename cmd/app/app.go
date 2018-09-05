@@ -44,5 +44,4 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/", instrumentHandler(http.FileServer(http.Dir("/app/content"))))
 	log.Fatal(http.ListenAndServe(":8080", nil))
-
 }
