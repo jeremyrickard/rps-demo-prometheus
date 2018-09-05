@@ -27,14 +27,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8080
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
           resources:
 {{ toYaml .Values.app.resources | indent 12 }}
     {{- with .Values.app.nodeSelector }}
