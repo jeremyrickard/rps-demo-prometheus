@@ -7,10 +7,10 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: {{ template "adoptdog.fullname" . }} 
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: {{ .Values.hpa.minReplicas }}
+  maxReplicas: {{ .Values.hpa.maxReplicas }}
   metrics:
   - type: Pods
     pods:
       metricName: requests_per_second
-      targetAverageValue: 10
+      targetAverageValue: {{ .Values.hpa.metricTarget}}

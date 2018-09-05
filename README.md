@@ -13,7 +13,7 @@ This will create a number of CRDs, Service Accounts and RBAC things. Once it's f
 ## Create a Prometheus instance
 
 ```bash
-kubectl create -f prometheus-config/prometheus/prometheus.yaml
+kubectl apply -f prometheus-config/prometheus
 ```
 
 This will create a single replica Prometheus instance.

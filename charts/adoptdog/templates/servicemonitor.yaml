@@ -8,6 +8,6 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "adoptdog.name" . }}
+      prom: {{ template "adoptdog.name" . }}
   endpoints:
   - port: http

@@ -4,13 +4,14 @@ metadata:
   name: {{ template "adoptdog.fullname" . }}
   labels:
     app: {{ template "adoptdog.name" . }}
+    prom: {{ template "adoptdog.name" . }}
     chart: {{ template "adoptdog.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.app.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.app.service.port }}
       targetPort: http
       protocol: TCP
       name: http
