@@ -39,17 +39,6 @@ resources:
    requests:
     cpu: 50m
     memory: 0.1G
-worker:
-  replicaCount:
-    pods: 1
-  image:
-    repository: rbitia/nodedog
-    tag: latest
-    pullPolicy: IfNotPresent
-  service:
-    name: worker
-    type: ClusterIP
-    port: 80
 
 nodeSelector: {}
 
