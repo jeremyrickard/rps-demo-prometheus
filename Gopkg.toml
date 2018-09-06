@@ -32,3 +32,11 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/didip/tollbooth"
+  version = "4.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/time"
