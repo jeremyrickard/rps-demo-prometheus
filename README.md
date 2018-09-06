@@ -8,7 +8,7 @@ We will use the Prometheus Operator to create the Prometheus cluster and to crea
 kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/master/bundle.yaml
 ```
 
-This will create a number of CRDs, Service Accounts and RBAC things. Once it's finished, 
+This will create a number of CRDs, Service Accounts and RBAC things. Once it's finished, you'll have the Prometheus Operator, but not a Prometheus instance. You'll need to create one of those next. 
 
 ## Create a Prometheus instance
 
@@ -36,7 +36,7 @@ aks-nodepool1-30440750-1   Ready     agent     27d       v1.10.6
 aks-nodepool1-30440750-2   Ready     agent     27d       v1.10.6
 virtual-kubelet            Ready     agent     16h       v1.8.3
 ```
-In this case, it's Virtual Kubelet. If you've installed with the ACI Connector, you may have a node name like **virtual-kubelet-aci-connector-linux-westcentralus**. 
+In this case, it's Virtual Kubelet. If you've installed with the ACI Connector, you may have a node name like **virtual-kubelet-aci-connector-linux-westcentralus**.
 
 Export the node name to an environment variable
 
