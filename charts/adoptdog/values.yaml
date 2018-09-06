@@ -7,7 +7,7 @@
 app:
   throttle:
     sleep: 1
-    limit: 10
+    limit: 100
 
   replicaCount: 1
   image:
