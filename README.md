@@ -26,8 +26,25 @@ kubectl expose pod prometheus-prometheus-0 --port 9090 --target-port 9090
 
 ## Deploy The Adopt Dog App
 
+You will need your Virtual Kubelet node name to install the app. The app will install a counter that will get the pod count for the application and provide a metric for pods on Virtual Kubelet and pods on all other nodes.
+
 ```bash
-helm install ./charts/adoptdog --name rps-prom
+$ kubectl get nodes
+AME                       STATUS    ROLES     AGE       VERSION
+aks-nodepool1-30440750-0   Ready     agent     27d       v1.10.6
+aks-nodepool1-30440750-1   Ready     agent     27d       v1.10.6
+aks-nodepool1-30440750-2   Ready     agent     27d       v1.10.6
+virtual-kubelet            Ready     agent     16h       v1.8.3
+```
+In this case, it's Virtual Kubelet. If you've installed with the ACI Connector, you may have a node name like **virtual-kubelet-aci-connector-linux-westcentralus**. 
+
+Export the node name to an environment variable
+
+```
+$ export VK_NODE_NAME=<your_node_name>
+
+```bash
+helm install ./charts/adoptdog --name rps-prom --set counter.specialNodeName=$VK_NODE_NAME
 ```
 
 This will deploy with an ingress and should create the HPA, Prometheus ServiceMonitor and everything else needed, except the adapter. Do that next.
