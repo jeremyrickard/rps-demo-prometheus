@@ -35,6 +35,11 @@ spec:
             httpGet:
               path: /
               port: 8080
+          env:
+            - name: SLEEP_SECONDS
+              value: {{ .Values.app.throttle.sleep | quote }}
+            - name: RPS_THRESHOLD
+              value: {{ .Values.app.throttle.limit | quote }}
           resources:
 {{ toYaml .Values.app.resources | indent 12 }}
     {{- with .Values.app.nodeSelector }}

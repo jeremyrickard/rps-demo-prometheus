@@ -5,6 +5,10 @@
 
 
 app:
+  throttle:
+    sleep: 1
+    limit: 10
+
   replicaCount: 1
   image:
     repository: jeremyrickard/rps-prom
@@ -55,6 +59,8 @@ promMonitor: rps-demo
 
 counter:
   replicaCount: 1
+  # The watcher will report pods on this node separately
+  specialNodeName: 
   image:
     repository: jeremyrickard/container-counter
     tag: latest 

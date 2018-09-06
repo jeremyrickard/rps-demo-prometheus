@@ -107,23 +107,34 @@ rps-prom-adoptdog   Deployment/rps-prom-adoptdog   170500m / 10   2         10  
 rps-prom-adoptdog   Deployment/rps-prom-adoptdog   111500m / 10   2         10        4         5m
 rps-prom-adoptdog   Deployment/rps-prom-adoptdog   95250m / 10   2         10        4         6m
 rps-prom-adoptdog   Deployment/rps-prom-adoptdog   141 / 10   2         10        4         6m
-
 ```
 
 Overtime, this should go up.
 
 ## Some Prometheus Queries
 
-Rounded average requests per second
+Rounded average requests per second per container
 
 ```
 round(avg(irate(request_durations_histogram_secs_count[1m])))
+```
+
+Rounded total requests per second
+
+```
+round(sum(irate(request_durations_histogram_secs_count[1m])))
 ```
 
 Individual number of data points, should correspond to number of containers
 
 ```
 count(irate(request_durations_histogram_secs_count[1m]))
+```
+
+The number of containers running, per the counter
+
+```
+running_containers
 ```
 
 Average response time in seconds:

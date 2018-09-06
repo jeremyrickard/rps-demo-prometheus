@@ -37,3 +37,5 @@ spec:
               value: {{ .Release.Namespace }}
             - name: LABEL_SELECTOR
               value: "app={{ template "adoptdog.name" . }}"
+            - name: SPECIAL_NODE_NAME
+              value: {{ required "A value is required for counter.specialNodeName" .Values.counter.specialNodeName}}
