@@ -1,5 +1,9 @@
 # Requests per Second Demo
 
+This repository contains a demo that shows how to use custom metrics to autoscale an Application. When combined with Virtual Kubelet, this lets you scale quickly to virtual nodes where you'll pay only for the container instance runtime. This repository will guide you through first installing the Prometheus Operator, followed by creating a Prometheus instance and installing the Prometheus Metric Adapter. With these in place, the provided Helm chart will install our demo application, along with supporting monitoring components, like a **ServiceMonitor** for Prometheus, a Horizontal Pod Autoscaler, and a custom container that will count the instances of the application and expose them to Prometheus.
+
+The container counter can be found at https://github.com/jeremyrickard/prometheus-containercounter
+
 ## Install Prometheus Operator
 
 We will use the Prometheus Operator to create the Prometheus cluster and to create the relevant configuration to monitor our app. So first, install the operator:
