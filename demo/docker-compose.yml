@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  local-forwarder:
+    environment:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+    build: 
+      context: ./lf
+    ports:
+      - "55678:55678"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 20s
+    tty: true
+    stdin_open: true
+  go-app:
+    environment: 
+      OCAGENT_TRACE_EXPORTER_ENDPOINT: local-forwarder:55678
+      SERVICE_NAME: go-app
+    build: 
+      context: ./go
+    ports:
+      - "8001:50030"
+    links:
+      - local-forwarder
