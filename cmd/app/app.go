@@ -13,6 +13,7 @@ import (
 	"contrib.go.opencensus.io/exporter/ocagent"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/trace"
+	"go.opencensus.io/plugin/ochttp/propagation/tracecontext"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
