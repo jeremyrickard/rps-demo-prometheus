@@ -19,10 +19,12 @@ services:
   go-app:
     environment: 
       OCAGENT_TRACE_EXPORTER_ENDPOINT: local-forwarder:55678
+      RPS_THRESHOLD: 60
       SERVICE_NAME: go-app
+      SLEEP_SECONDS: 3
     build: 
       context: ./go
     ports:
-      - "8001:50030"
+      - "8080:8080"
     links:
       - local-forwarder

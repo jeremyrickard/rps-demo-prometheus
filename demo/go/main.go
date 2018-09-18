@@ -1,33 +1,71 @@
-// Copyright 2018, OpenCensus Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package main
 
 import (
-	"bytes"
-	"fmt"
 	"log"
-	"net/http"
-	os "os"
 
-	ocagent "contrib.go.opencensus.io/exporter/ocagent"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
+	"golang.org/x/time/rate"
+
+	"contrib.go.opencensus.io/exporter/ocagent"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ochttp/propagation/tracecontext"
 	"go.opencensus.io/trace"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// type metrics struct {
+// 	currentCount int
+// 	lastCount    int
+// 	rps          float64
+// 	lastTime     time.Time
+// }
+
+var (
+	requestDurationsHistogram = prometheus.NewHistogram(prometheus.HistogramOpts{
+		Name:    "request_durations_histogram_secs",
+		Buckets: prometheus.DefBuckets,
+		Help:    "Requests Durations, in Seconds",
+	})
+)
+
+func init() {
+	prometheus.MustRegister(requestDurationsHistogram)
+}
+
+func instrumentHandler(
+	handler http.Handler,
+) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			now := time.Now()
+			t := prometheus.NewTimer(requestDurationsHistogram)
+			handler.ServeHTTP(w, r)
+			defer t.ObserveDuration()
+			diff := time.Since(now)
+			log.Printf("Finished request : %v", diff.Seconds())
+		},
+	)
+}
+
 func main() {
+	sleepSecondsStr := os.Getenv("SLEEP_SECONDS")
+	sleepSeconds, err := strconv.Atoi(sleepSecondsStr)
+	if err != nil {
+		log.Fatalf("bad value for sleep seconds: %s", sleepSecondsStr)
+	}
+
+	rpsLimitStr := os.Getenv("RPS_THRESHOLD")
+	rpsLimit, err := strconv.ParseFloat(rpsLimitStr, 64)
+	if err != nil {
+		log.Fatalf("bad value for rps limit: %s", rpsLimitStr)
+	}
+
 	// Register stats and trace exporters to export the collected data.
 	serviceName := os.Getenv("SERVICE_NAME")
 	if len(serviceName) == 0 {
@@ -51,38 +89,32 @@ func main() {
 	// probability.
 	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
 
-	client := &http.Client{Transport: &ochttp.Transport{Propagation: &tracecontext.HTTPFormat{}}}
+	// ctr := &metrics{
+	// 	lastTime: time.Now(),
+	// }
+	throttledHandler := throttler(
+		//	ctr,
+		rpsLimit,
+		sleepSeconds,
+		http.FileServer(http.Dir("/app/content")),
+	)
+	http.Handle("/metrics", promhttp.Handler())
+	http.Handle("/", instrumentHandler(throttledHandler))
+	//	go rpsTelemetryCalculator(ctr)
+	log.Fatal(http.ListenAndServe(":8080", &ochttp.Handler{Propagation: &tracecontext.HTTPFormat{}}))
+}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "hello world")
-
-		var jsonStr = []byte(`[ { "url": "http://blank.org", "arguments": [] } ]`)
-		r, _ := http.NewRequest("POST", "http://lmolkova-oc-test.azurewebsites.net/api/forward", bytes.NewBuffer(jsonStr))
-		r.Header.Set("Content-Type", "application/json")
-		// Propagate the trace header info in the outgoing requests.
-		r = r.WithContext(req.Context())
-		resp, err := client.Do(r)
-		if err != nil {
-			log.Println(err)
-		} else {
-			// TODO: handle response
-			resp.Body.Close()
-		}
-	})
-	http.HandleFunc("/call_blank", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "hello world")
-
-		r, _ := http.NewRequest("GET", "http://blank.org", nil)
-
-		// Propagate the trace header info in the outgoing requests.
-		r = r.WithContext(req.Context())
-		resp, err := client.Do(r)
-		if err != nil {
-			log.Println(err)
-		} else {
-			// TODO: handle response
-			resp.Body.Close()
-		}
-	})
-	log.Fatal(http.ListenAndServe(":50030", &ochttp.Handler{Propagation: &tracecontext.HTTPFormat{}}))
+func throttler(
+	//ctr *metrics,
+	limit float64,
+	sleepSeconds int,
+	handler http.Handler,
+) http.Handler {
+	limiter := rate.NewLimiter(rate.Limit(limit), 10)
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			limiter.Wait(r.Context())
+			handler.ServeHTTP(w, r)
+		},
+	)
 }
