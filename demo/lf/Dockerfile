@@ -1,11 +1,9 @@
-FROM microsoft/dotnet:2.1-sdk
+FROM microsoft/dotnet:2.1-runtime
 
 RUN mkdir /lf
 ADD . /lf/
-
-RUN chmod +x /lf/LF-ConsoleHost/Microsoft.LocalForwarder.ConsoleHost
+WORKDIR /lf/bin
 
 EXPOSE 55678
 
-CMD bash -c 'cd /lf/LF-ConsoleHost && ./Microsoft.LocalForwarder.ConsoleHost noninteractive'
-
+ENTRYPOINT ["dotnet", "./Microsoft.LocalForwarder.ConsoleHost.dll", "noninteractive"]
