@@ -6,7 +6,7 @@
   name = "contrib.go.opencensus.io/exporter/ocagent"
   packages = ["."]
   pruneopts = "UT"
-  revision = "00af367e65149ff1f2f4b93bbfbb84fd9297170d"
+  revision = "0013f5688ca8cacd9e4faddf6fa2b81d1dc7c3a7"
   version = "v0.2.0"
 
 [[projects]]

@@ -184,7 +184,7 @@ func (ae *Exporter) doStartLocked() error {
 //  * exponential backoff, 5 times with a period of 50ms
 // hence in the worst case of (no agent actually available), it
 // will take at least:
-//      (5 * 1s) + ((1<<5)-1) * 0.01 s = 5s + 1.55s = 6.55s
+//      (5 * 1s) + ((1<<5)-1) * 0.05 s = 5s + 1.55s = 6.55s
 func (ae *Exporter) dialToAgent() (*grpc.ClientConn, error) {
 	addr := ae.prepareAgentAddress()
 	dialOpts := []grpc.DialOption{grpc.WithBlock()}
@@ -273,7 +273,7 @@ func (ae *Exporter) ExportSpan(sd *trace.SpanData) {
 	if sd == nil {
 		return
 	}
-	_ = ae.traceBundler.Add(sd, -1)
+	_ = ae.traceBundler.Add(sd, 1)
 }
 
 func (ae *Exporter) uploadTraces(sdl []*trace.SpanData) {
