@@ -2,6 +2,8 @@ FROM alpine:3.7
 
 RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache libstdc++
+RUN apk add --no-cache libintl
+RUN apk add --no-cache openssl
 RUN mkdir /lf
 ADD . /lf/
 WORKDIR /lf/bin

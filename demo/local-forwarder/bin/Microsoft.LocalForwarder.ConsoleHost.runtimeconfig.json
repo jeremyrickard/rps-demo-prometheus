@@ -1,3 +1,7 @@
 {
-  "runtimeOptions": {}
+  "runtimeOptions": {
+        "configProperties": {
+            "System.Globalization.Invariant": true
+        }
+    }
 }
