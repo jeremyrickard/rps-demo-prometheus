@@ -5,7 +5,7 @@ services:
     environment:
       APPINSIGHTS_INSTRUMENTATIONKEY: "${APPINSIGHTS_INSTRUMENTATIONKEY}"
     build: 
-      context: ./lf
+      context: ./local-forwarder
     ports:
       - "55678:55678"
     deploy:
