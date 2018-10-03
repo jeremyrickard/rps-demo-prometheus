@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  local-forwarder:
+    environment:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+    build: 
+      context: .
+    image: local-forwarder-img
+    container_name: local-forwarder
+    ports:
+      - "55678:55678"
+    tty: true
+    stdin_open: true
